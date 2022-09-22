@@ -1,0 +1,3 @@
+version=3
+opts=pgpsigurlmangle=s/$/.sig/ \
+https://xorg.freedesktop.org/releases/individual/lib/ libXext-(.*)\.tar\.gz

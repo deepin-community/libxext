@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+# debian/rules for the Debian libxext package.
+# Copyright © 2004 Scott James Remnant <scott@netsplit.com>
+# Copyright © 2005 Daniel Stone <daniel@fooishbar.org>
+# Copyright © 2005 David Nusinow <dnusinow@debian.org>
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# set this to the name of the main shlib's binary package
+PACKAGE = libxext6
+
+export DEB_CFLAGS_MAINT_APPEND=-Wall
+
+%:
+	dh $@ --builddirectory=build/
+
+docflags = --docdir=/usr/share/doc/libxext-dev
+
+override_dh_auto_configure-arch: docflags += --disable-specs
+override_dh_auto_configure-indep: docflags += --enable-specs --with-xmlto --without-fop
+
+override_dh_auto_configure-arch override_dh_auto_configure-indep:
+	dh_auto_configure -- $(docflags)
+
+override_dh_install:
+	# Kill *.xml, we don't need them:
+	find debian/tmp -name '*.xml' -delete
+	find debian/tmp -name '*.db' -delete
+	find debian/tmp -name '*.la' -delete
+	dh_install
+
+override_dh_missing:
+	dh_missing --fail-missing
+
+override_dh_makeshlibs:
+	dh_makeshlibs -V"$(PACKAGE) (>= 2:1.3.0)" --add-udeb=$(PACKAGE)-udeb -- -c4
